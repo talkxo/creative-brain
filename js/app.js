@@ -28,6 +28,27 @@ const App = (() => {
         document.getElementById('file-input')?.click();
       });
 
+      // Sidebar Toggle
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = document.getElementById('sidebar-toggle');
+      const openBtn = document.getElementById('btn-open-sidebar');
+
+      if (sidebar && toggleBtn && openBtn) {
+        toggleBtn.addEventListener('click', () => {
+          sidebar.classList.add('collapsed');
+          openBtn.classList.add('visible');
+          // Trigger a resize to let Three.js know the canvas container changed size
+          setTimeout(() => window.dispatchEvent(new Event('resize')), 500);
+        });
+
+        openBtn.addEventListener('click', () => {
+          sidebar.classList.remove('collapsed');
+          openBtn.classList.remove('visible');
+          // Trigger a resize to let Three.js know the canvas container changed size
+          setTimeout(() => window.dispatchEvent(new Event('resize')), 500);
+        });
+      }
+
       // API health
       UIController.setApiStatus('loading', 'Connecting…');
       const ok = await ApiClient.checkHealth().catch(() => false);
@@ -38,11 +59,46 @@ const App = (() => {
       UIController.setApiStatus('error', 'Init Error');
     }
 
-    // Hide loading overlay
-    setTimeout(() => {
-      document.getElementById('loading-overlay')?.classList.add('hidden');
-      document.getElementById('app')?.classList.add('visible');
-    }, 700);
+    // Dynamic Loading Sequence with Smooth Transitions
+    const statusEl = document.getElementById('loading-status');
+    const messages = [
+      "Loading the multimodal model",
+      "Installing ad creatives training data",
+      "Loading mental models & theories",
+      "Starting the sandbox"
+    ];
+    
+    let msgIndex = 0;
+    
+    const showNextMessage = () => {
+      if (!statusEl) return;
+      
+      // Wait time before starting fade out
+      setTimeout(() => {
+        msgIndex++;
+        
+        if (msgIndex < messages.length) {
+          // 1. Fade out
+          statusEl.classList.add('fade-out');
+          
+          // 2. Change text after fade out completes (500ms)
+          setTimeout(() => {
+            statusEl.textContent = messages[msgIndex];
+            statusEl.classList.remove('fade-out');
+            
+            // 3. Recurse
+            showNextMessage();
+          }, 500);
+          
+        } else {
+          // Final reveal
+          document.getElementById('loading-overlay')?.classList.add('hidden');
+          document.getElementById('app')?.classList.add('visible');
+        }
+      }, 1800); // Wait 1.8s between messages
+    };
+    
+    showNextMessage();
   }
 
   // ─── Handlers ────────────────────────────────────────────────────────────

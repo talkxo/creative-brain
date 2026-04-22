@@ -79,6 +79,21 @@ body {
 .loading-content {
   text-align: center;
   color: var(--text-main);
+  max-width: 400px;
+  padding: 0 20px;
+}
+#loading-status {
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 24px;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+#loading-status.fade-out {
+  opacity: 0;
 }
 .brain-loader {
   width: 60px;
@@ -133,9 +148,75 @@ body {
   flex-direction: column;
   padding: 24px;
   gap: 16px;
-  z-index: 10;
+  z-index: 100;
   box-shadow: 4px 0 24px rgba(0,0,0,0.5);
-  overflow: hidden; /* Prevent the main sidebar from scrolling */
+  overflow: hidden; 
+  position: relative;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar.collapsed {
+  width: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 101;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-toggle:hover {
+  background: var(--bg-glass-hover);
+  color: var(--text-main);
+  border-color: var(--accent-secondary);
+}
+
+/* Floating re-open button when sidebar hidden */
+#btn-open-sidebar {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 90;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s;
+}
+
+#btn-open-sidebar.visible {
+  display: flex;
+  animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 /* Custom Scrollbar for inner boxes */

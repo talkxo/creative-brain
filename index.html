@@ -23,20 +23,31 @@
         <div class="brain-pulse delay-1"></div>
         <div class="brain-pulse delay-2"></div>
       </div>
-      <h2>Neural Engine</h2>
+      <h2 id="loading-status">Loading the multimodal model</h2>
     </div>
   </div>
 
   <!-- ─── Main App ────────────────────────────────── -->
+  <button id="btn-open-sidebar" title="Open Sidebar">
+    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+      <path d="M9 18l6-6-6-6" />
+    </svg>
+  </button>
+
   <div id="app" class="app">
 
     <!-- ─── Left Sidebar ─── -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
+      <button id="sidebar-toggle" class="sidebar-toggle" title="Toggle Sidebar">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
 
       <!-- Upload gallery -->
       <div class="sidebar-box box-black" id="upload-box" style="background:#0a0a0f;">
         <div class="box-content-left">
-          <p class="section-title">Creatives</p>
+          <p class="section-title">YOUR STACK</p>
           <div id="creative-list"
                style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px;">
           </div>
@@ -44,7 +55,7 @@
           <input type="file" id="file-input" style="display:none" accept="image/*,video/*" multiple />
           <button id="btn-custom-upload" class="btn-text"
                   style="width:100%; text-align:left; padding:8px 0; font-size:0.85rem; color:var(--accent-secondary); font-weight:600;">
-            + UPLOAD CREATIVE
+            + UPLOAD AD CREATIVE
           </button>
 
           <div class="sidebar-footer" style="margin-top:16px;">
