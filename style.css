@@ -304,11 +304,79 @@ body {
   font-weight: 500;
   color: var(--text-muted);
 }
+/* Hemisphere Headers Premium */
+.hemi-header-premium {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--accent-main);
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.hemi-header-premium::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+  pointer-events: none;
+}
+.hemi-label-main {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
 .hemi-val {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 1.1rem;
-  letter-spacing: -0.02em;
+  font-size: 1.4rem;
+  color: var(--text-main);
+  text-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+/* Insights Carousel */
+.insights-carousel-container {
+  position: relative;
+  width: 100%;
+}
+.insights-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  gap: 12px;
+  padding-bottom: 10px;
+}
+.insights-carousel::-webkit-scrollbar { display: none; }
+.insight-card {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  min-width: 0;
+}
+.carousel-nav {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.carousel-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.carousel-dot.active {
+  background: var(--accent-main);
+  box-shadow: 0 0 8px var(--accent-main);
+  transform: scale(1.3);
 }
 
 /* Insights Breakdown */
@@ -349,6 +417,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+.score-bar-item.disabled {
+  opacity: 0.3;
+  pointer-events: auto; /* Allow clicking to re-enable */
 }
 
 .score-bar-top {

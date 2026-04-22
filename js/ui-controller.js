@@ -19,8 +19,25 @@ const UIController = (() => {
   function showScores(result) {
     if (!result || !result.scores) return;
     latestResult = result;
-    const scores  = { ...result.scores };
+    const scores = { ...result.scores };
     const insights = result.insights || [];
+
+    // Calculate Hemisphere Averages
+    const leftKeys  = ['visual_saliency', 'cognitive_ease'];
+    const rightKeys = ['emotional_arousal', 'value_recognition', 'memory_encoding'];
+    const avg = keys => Math.round((keys.reduce((a, k) => a + (scores[k] || 0), 0) / keys.length) * 100);
+
+    const leftContainer = document.getElementById('score-left').parentElement;
+    const rightContainer = document.getElementById('score-right').parentElement;
+    
+    if (leftContainer) {
+      leftContainer.className = 'hemi-header-premium';
+      leftContainer.innerHTML = `<span class="hemi-label-main">Left / Logical</span> <span class="hemi-val">${avg(leftKeys)}%</span>`;
+    }
+    if (rightContainer) {
+      rightContainer.className = 'hemi-header-premium';
+      rightContainer.innerHTML = `<span class="hemi-label-main">Right / Creative</span> <span class="hemi-val">${avg(rightKeys)}%</span>`;
+    }
 
     // Filter out disabled regions for the 3D renderer
     const filteredScores = {};
@@ -174,5 +191,5 @@ const UIController = (() => {
     if (latestResult) showScores(latestResult);
   }
 
-  return { showScores, hideScores, setApiStatus, updateLabelPositions, toggleRegion, REGION_META };
+  return { showScores, hideScores, setApiStatus, updateLabelPositions, toggleRegion, scrollToInsight, REGION_META };
 })();
