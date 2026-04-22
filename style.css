@@ -40,7 +40,7 @@
   --sp-xl: 32px;
 
   /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Roboto Mono', monospace;
   --font-mono: 'Roboto Mono', monospace;
 }
 

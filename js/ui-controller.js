@@ -69,14 +69,9 @@ const UIController = (() => {
 
     // Insights
     const insightsBox  = document.getElementById('insights-box');
-    const insightsList = document.getElementById('insights-list');
-    if (insightsBox && insightsList) {
-      if (insights.length > 0) {
-        insightsBox.style.display = 'flex';
-        insightsList.innerHTML = insights.map(t => `<div class="insight-item">${t}</div>`).join('');
-      } else {
-        insightsBox.style.display = 'none';
-      }
+    if (insightsBox) {
+      insightsBox.style.display = insights.length > 0 ? 'flex' : 'none';
+      if (insights.length > 0) updateInsights(insights);
     }
 
     // Show source badge
@@ -105,6 +100,58 @@ const UIController = (() => {
   }
 
   // ─── Score Bars ──────────────────────────────────────────────────────────
+
+  function updateInsights(insights) {
+    const list = document.getElementById('insights-list');
+    if (!list) return;
+
+    if (!insights || insights.length === 0) {
+      list.innerHTML = '<p class="placeholder-text">No insights detected.</p>';
+      return;
+    }
+
+    // Generate Carousel HTML
+    let carouselHtml = `
+      <div class="insights-carousel-container">
+        <div class="insights-carousel" id="insights-carousel">
+          ${insights.map(txt => `
+            <div class="insight-card">
+              <div class="box-content-grey" style="min-height:100px;">
+                <p class="insight-text">${txt}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        ${insights.length > 1 ? `
+          <div class="carousel-nav" id="carousel-nav">
+            ${insights.map((_, i) => `<div class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="UIController.scrollToInsight(${i})"></div>`).join('')}
+          </div>
+        ` : ''}
+      </div>
+    `;
+
+    list.innerHTML = carouselHtml;
+
+    // Attach scroll listener to update dots
+    const carousel = document.getElementById('insights-carousel');
+    if (carousel) {
+      carousel.addEventListener('scroll', () => {
+        const index = Math.round(carousel.scrollLeft / carousel.offsetWidth);
+        const dots = document.querySelectorAll('.carousel-dot');
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      });
+    }
+  }
+
+  function scrollToInsight(i) {
+    const carousel = document.getElementById('insights-carousel');
+    if (carousel) {
+      carousel.scrollTo({
+        left: i * carousel.offsetWidth,
+        behavior: 'smooth'
+      });
+    }
+  }
 
   function updateScoreBars(scores, reasons = {}) {
     // Determine the container, we may have separate left/right or a unified #score-bars container
