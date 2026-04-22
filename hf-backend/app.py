@@ -54,7 +54,7 @@ else:
 
 @app.get("/")
 def read_root():
-    return {"status": "online", "engine": "VLM Neural Engine", "active": True}
+    return {"status": "online", "engine": "Creative Intelligence Engine", "active": True}
 
 @app.get("/api/health")
 def health_check():
