@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+.env
+hf-backend/__pycache__/
+hf-backend/env/
+hf-backend/.env
+dist/
+build/
+.antigravity/
+.gemini/

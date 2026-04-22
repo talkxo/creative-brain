@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creative Brain Analyzer — Neural Intelligence Engine</title>
+  <meta name="description" content="Analyse creative performance using advanced neural-response prediction models." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/simplex-noise@2.4.0/simplex-noise.min.js"></script>
+</head>
+<body>
+
+  <!-- ─── Loading Overlay ─────────────────────────── -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="brain-loader">
+        <div class="brain-pulse"></div>
+        <div class="brain-pulse delay-1"></div>
+        <div class="brain-pulse delay-2"></div>
+      </div>
+      <h2>Neural Engine</h2>
+      <p class="loading-sub">Powered by Neural Intelligence</p>
+    </div>
+  </div>
+
+  <!-- ─── Main App ────────────────────────────────── -->
+  <div id="app" class="app">
+
+    <!-- ─── Left Sidebar ─── -->
+    <aside class="sidebar">
+
+      <!-- Upload gallery -->
+      <div class="sidebar-box box-black" id="upload-box" style="background:#0a0a0f;">
+        <div class="box-content-left">
+          <p class="section-title">Creatives</p>
+          <div id="creative-list"
+               style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px;">
+          </div>
+
+          <input type="file" id="file-input" style="display:none" accept="image/*,video/*" multiple />
+          <button id="btn-custom-upload" class="btn-text"
+                  style="width:100%; text-align:left; padding:8px 0; font-size:0.85rem; color:var(--accent-secondary); font-weight:600;">
+            + UPLOAD CREATIVE
+          </button>
+
+          <div class="sidebar-footer" style="margin-top:16px;">
+            <div id="api-status" class="api-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Ready</span>
+            </div>
+            <button id="btn-reset" class="btn-text">Reset</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Creative breakdown / insights -->
+      <div class="sidebar-box box-grey" id="insights-box" style="display:none;">
+        <div class="box-content-left">
+          <p class="section-title">Creative Breakdown</p>
+          <div id="insights-list" class="insights-list"></div>
+        </div>
+      </div>
+
+      <!-- Unified Analysis Box -->
+      <div class="sidebar-box box-grey box-flex-fill" id="analysis-box">
+        <div id="analysis-content" style="display:none; flex-direction:column; gap:16px;">
+          
+          <!-- Left Hemisphere -->
+          <div class="hemisphere-section">
+            <div class="hemi-row" style="margin-top:0;">
+              <span class="hemi-label" style="color:#fff; font-weight:600;">Left (Logic / Analysis)</span>
+              <span class="hemi-val" id="score-left" style="color:var(--text-main);">—</span>
+            </div>
+            <div id="score-bars-left" class="score-bars-compact" style="margin-top:16px; margin-bottom:16px;"></div>
+          </div>
+          
+          <div style="height:1px; background:var(--border-subtle); margin:4px 0;"></div>
+
+          <!-- Right Hemisphere -->
+          <div class="hemisphere-section">
+            <div class="hemi-row" style="margin-top:0;">
+              <span class="hemi-label" style="color:#fff; font-weight:600;">Right (Creativity / Emotion)</span>
+              <span class="hemi-val" id="score-right" style="color:var(--text-main);">—</span>
+            </div>
+            <div id="score-bars-right" class="score-bars-compact" style="margin-top:16px;"></div>
+          </div>
+
+        </div>
+
+        <div id="analysis-hint" class="box-content-centered" style="opacity: 0.4; text-align:center;">
+          <div style="font-size:2rem; margin-bottom:12px;">📊</div>
+          <p class="placeholder-text" style="font-size:0.8rem; letter-spacing:0.02em;">AWAITING NEURAL DATA</p>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ─── Right: Brain canvas ─── -->
+    <main class="main-canvas-area">
+
+      <!-- 2D Canvas -->
+      <div id="brain-canvas-container" class="brain-canvas-container">
+        <canvas id="brain-canvas"></canvas>
+
+        <!-- Drop / empty state hint — hidden once creatives exist -->
+        <div class="canvas-drop-hint" id="canvas-drop-hint">
+          <div class="hint-icon">🧠</div>
+          <div class="hint-text">Drop an image here or use the sidebar</div>
+          <div class="hint-sub">Supports JPG, PNG, GIF, WEBP, MP4</div>
+        </div>
+      </div>
+
+      <!-- Floating region labels (positioned by JS each frame) -->
+      <div id="brain-labels" class="brain-labels"></div>
+
+      <!-- CTA bottom-right -->
+      <div class="cta-box">
+        Get intention-optimised creatives for your performance campaigns.<br/>
+        <a href="#" class="cta-link">Talk to our team →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- App modules (order matters) -->
+  <script src="js/brain-canvas-3d.js"></script>
+  <script src="js/api-client.js"></script>
+  <script src="js/upload-manager.js"></script>
+  <script src="js/ui-controller.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Hide canvas hint once a creative is loaded -->
+  <script>
+    (function () {
+      const hint = document.getElementById('canvas-drop-hint');
+      // Observe changes in the creative-list element
+      const obs = new MutationObserver(() => {
+        const hasThumbs = document.querySelectorAll('#creative-list > div').length > 0 &&
+                          !document.querySelector('#creative-list > div[style*="grid-column"]');
+        if (hint) hint.style.opacity = hasThumbs ? '0' : '1';
+      });
+      obs.observe(document.getElementById('creative-list'), { childList: true, subtree: false });
+    })();
+  </script>
+</body>
+</html>
