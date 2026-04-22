@@ -66,8 +66,8 @@ def health_check():
     }
 
 prompt_template = """
-You are a neuromarketing expert AI analyzing an ad creative image.
-Evaluate this image strictly on these 5 cognitive parameters. Give a score between 0.40 and 0.98.
+You are a neuromarketing expert AI analyzing an ad creative image critically with emphasis on copy, CTA, best time and platform etc..
+Evaluate this image strictly on these 5 cognitive parameters. Give a score between 0.20 and 0.98.
 Also provide a VERY brief 1-sentence analytical reason based exactly on what is visibly in the image.
 
 The parameters are:
