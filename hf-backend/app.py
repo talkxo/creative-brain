@@ -81,11 +81,11 @@ Return strictly valid JSON containing a single "scores" object, a "reasons" obje
 Format:
 {
   "scores": {
-    "visual_saliency": 0.82,
-    "cognitive_ease": 0.70,
-    "emotional_arousal": 0.50,
-    "value_recognition": 0.88,
-    "memory_encoding": 0.65
+    "visual_saliency": 0.42,
+    "cognitive_ease": 0.28,
+    "emotional_arousal": 0.35,
+    "value_recognition": 0.48,
+    "memory_encoding": 0.22
   },
   "reasons": {
     "visual_saliency": "The high contrast between the bright red text and black background immediately grabs attention.",
@@ -133,10 +133,10 @@ async def analyze_creative(
 
         except Exception as e:
             scores = {
-                "visual_saliency": 0.85, "cognitive_ease": 0.65, 
-                "emotional_arousal": 0.80, "value_recognition": 0.82, "memory_encoding": 0.75
+                "visual_saliency": 0.32, "cognitive_ease": 0.28, 
+                "emotional_arousal": 0.20, "value_recognition": 0.45, "memory_encoding": 0.24
             }
-            reasons = {k: "Error processing via API." for k in scores}
+            reasons = {k: f"Error: {str(e)[:50]}..." for k in scores}
             insights = [f"API Error: {str(e)}"]
             source = f"HF Space (Error)"
     else:
@@ -145,11 +145,11 @@ async def analyze_creative(
         h = int(hashlib.md5(seed.encode()).hexdigest(), 16)
         
         scores = {
-            "visual_saliency":       0.50 + ((h % 45) / 100),
-            "cognitive_ease":        0.40 + (((h // 2) % 45) / 100),
-            "emotional_arousal":     0.50 + (((h // 5) % 45) / 100),
-            "value_recognition":     0.55 + (((h // 11) % 40) / 100),
-            "memory_encoding":       0.45 + (((h // 7) % 45) / 100),
+            "visual_saliency":       0.20 + ((h % 31) / 100),
+            "cognitive_ease":        0.20 + (((h // 2) % 31) / 100),
+            "emotional_arousal":     0.20 + (((h // 5) % 31) / 100),
+            "value_recognition":     0.20 + (((h // 11) % 31) / 100),
+            "memory_encoding":       0.20 + (((h // 7) % 31) / 100),
         }
         reasons = {
             "visual_saliency": "Mock reason based on deterministic simulation.",
@@ -161,12 +161,15 @@ async def analyze_creative(
         insights = ["Running in simulation mode. No valid GEMINI_API_KEY provided."]
         source = "HF Space (Simulation Fallback)"
 
-    # Base timelines that would be extracted from frame-by-frame analysis
+    # Calculate timeline metrics from current scores (averaging for consistency)
+    avg_score = sum(scores.values()) / len(scores) if scores else 0.5
     timeline = {
-        "attention": 85,
-        "emotion": 78,
-        "memory": 82
+        "attention": round(avg_score * 100 + (h % 10 if 'h' in locals() else 5), 1),
+        "emotion": round(avg_score * 95 + (h % 15 if 'h' in locals() else 2), 1),
+        "memory": round(avg_score * 98 + (h % 12 if 'h' in locals() else 4), 1)
     }
+    # Clamp timeline scores to 100
+    timeline = {k: min(v, 99.0) for k, v in timeline.items()}
 
     return {
         "id": id,

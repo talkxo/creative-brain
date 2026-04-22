@@ -22,19 +22,20 @@ const UIController = (() => {
     const scores = { ...result.scores };
     const insights = result.insights || [];
 
-    // Calculate Hemisphere Averages
     const leftKeys  = ['visual_saliency', 'cognitive_ease'];
     const rightKeys = ['emotional_arousal', 'value_recognition', 'memory_encoding'];
     const avg = keys => Math.round((keys.reduce((a, k) => a + (scores[k] || 0), 0) / keys.length) * 100);
 
-    const leftContainer = document.getElementById('score-left').parentElement;
-    const rightContainer = document.getElementById('score-right').parentElement;
+    const scoreLeftEl = document.getElementById('score-left');
+    const scoreRightEl = document.getElementById('score-right');
     
-    if (leftContainer) {
+    if (scoreLeftEl && scoreLeftEl.parentElement) {
+      const leftContainer = scoreLeftEl.parentElement;
       leftContainer.className = 'hemi-header-premium';
       leftContainer.innerHTML = `<span class="hemi-label-main">Left / Logical</span> <span class="hemi-val">${avg(leftKeys)}%</span>`;
     }
-    if (rightContainer) {
+    if (scoreRightEl && scoreRightEl.parentElement) {
+      const rightContainer = scoreRightEl.parentElement;
       rightContainer.className = 'hemi-header-premium';
       rightContainer.innerHTML = `<span class="hemi-label-main">Right / Creative</span> <span class="hemi-val">${avg(rightKeys)}%</span>`;
     }
@@ -116,15 +117,13 @@ const UIController = (() => {
         <div class="insights-carousel" id="insights-carousel">
           ${insights.map(txt => `
             <div class="insight-card">
-              <div class="box-content-grey" style="min-height:100px;">
-                <p class="insight-text">${txt}</p>
-              </div>
+              <p class="insight-text" style="min-height:80px; display:flex; align-items:center; margin:0;">${txt}</p>
             </div>
           `).join('')}
         </div>
         ${insights.length > 1 ? `
           <div class="carousel-nav" id="carousel-nav">
-            ${insights.map((_, i) => `<div class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="UIController.scrollToInsight(${i})"></div>`).join('')}
+            ${insights.map((_, i) => `<div class="carousel-num ${i === 0 ? 'active' : ''}" onclick="UIController.scrollToInsight(${i})">${i + 1}</div>`).join('')}
           </div>
         ` : ''}
       </div>
@@ -132,14 +131,17 @@ const UIController = (() => {
 
     list.innerHTML = carouselHtml;
 
-    // Attach scroll listener to update dots
+    // Attach scroll listener to update active number
     const carousel = document.getElementById('insights-carousel');
     if (carousel) {
-      carousel.addEventListener('scroll', () => {
-        const index = Math.round(carousel.scrollLeft / carousel.offsetWidth);
-        const dots = document.querySelectorAll('.carousel-dot');
-        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-      });
+      const updateNav = () => {
+        const index = Math.round(carousel.scrollLeft / (carousel.offsetWidth || 1));
+        const nums = document.querySelectorAll('.carousel-num');
+        nums.forEach((num, i) => num.classList.toggle('active', i === index));
+      };
+      carousel.addEventListener('scroll', updateNav);
+      // Also update on resize to keep it healthy
+      window.addEventListener('resize', updateNav);
     }
   }
 
@@ -166,7 +168,7 @@ const UIController = (() => {
       const isDisabled = disabledRegions.has(key);
       
       return `
-        <div class="score-bar-item ${isDisabled ? 'disabled' : ''}" onclick="UIController.toggleRegion('${key}')" style="cursor:pointer; transition: opacity 0.3s; ${isDisabled ? 'opacity:0.3;' : ''}">
+        <div class="score-bar-item ${isDisabled ? 'disabled' : ''}" onclick="toggleRegion('${key}')" style="cursor:pointer; transition: opacity 0.3s; ${isDisabled ? 'opacity:0.3;' : ''}">
           <div class="score-bar-top">
             <span class="score-bar-name" style="color: ${meta.color}">
               ${meta.label}
@@ -237,6 +239,7 @@ const UIController = (() => {
     
     if (latestResult) showScores(latestResult);
   }
+  window.toggleRegion = toggleRegion;
 
   return { showScores, hideScores, setApiStatus, updateLabelPositions, toggleRegion, scrollToInsight, REGION_META };
 })();

@@ -246,23 +246,35 @@ const BrainRenderer = (() => {
 
             if (influence > 0) {
               let rmColor = hexToRgb((typeof UIController !== 'undefined' && UIController.REGION_META && UIController.REGION_META[key]) ? UIController.REGION_META[key].color : '#ffffff');
-              // p grows to 1 faster and pulses
-              let p = Math.min(1.0, influence * 1.8 * (0.6 + 0.5 * Math.sin(time * 0.005 - dist * 1.2)));
+              
+              // Much slower, more rhythmic pulse even at high scores
+              let pulseSpeed = 0.0008 + (score * 0.0012);
+              let p = Math.min(1.0, influence * (1.1 + score * 1.4) * (0.6 + 0.4 * Math.sin(time * pulseSpeed - dist * 1.2)));
 
-              let actR = (rmColor[0] / 255) * 1.5;
-              let actG = (rmColor[1] / 255) * 1.5;
-              let actB = (rmColor[2] / 255) * 1.5;
+              // Higher intensity but with better saturation retention
+              let intensity = 1.0 + (score * 2.5);
+              let actR = (rmColor[0] / 255) * intensity;
+              let actG = (rmColor[1] / 255) * intensity;
+              let actB = (rmColor[2] / 255) * intensity;
 
-              r = r * (1 - p) + Math.min(1.0, actR) * p;
-              g = g * (1 - p) + Math.min(1.0, actG) * p;
-              b = b * (1 - p) + Math.min(1.0, actB) * p;
+              // Mix with base but don't clamp actR/G/B inside the mix
+              r = r * (1 - p) + actR * p;
+              g = g * (1 - p) + actG * p;
+              b = b * (1 - p) + actB * p;
 
-              // Intense white core for high scores
-              if (dist < 1.8 * score) {
-                r = Math.min(1.0, r + 0.3);
-                g = Math.min(1.0, g + 0.3);
-                b = Math.min(1.0, b + 0.3);
+              // Subtle "bright core" that maintains tint rather than pure white
+              let coreRadius = 1.5 * score;
+              if (dist < coreRadius) {
+                let coreBoost = score * 0.2 * (1.0 - dist / coreRadius);
+                r += coreBoost * (actR + 0.5);
+                g += coreBoost * (actG + 0.5);
+                b += coreBoost * (actB + 0.5);
               }
+
+              // Final clamp to keep within 0-1 range for the buffer
+              r = Math.min(1.0, r);
+              g = Math.min(1.0, g);
+              b = Math.min(1.0, b);
             }
           }
         }
